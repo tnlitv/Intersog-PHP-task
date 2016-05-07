@@ -1,0 +1,5 @@
+DB_NAME=
+DB_USER=
+DB_PASSWORD=
+DB_HOST=localhost
+JWT_SECRET=supersecretkeyyoushouldnotcommittogithub

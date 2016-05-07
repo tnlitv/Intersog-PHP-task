@@ -1,0 +1,24 @@
+<html>
+<head>
+    <title>Example Application</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+</head>
+<body style="padding: 10px; padding-left: 160px;">
+<h1>New Ticket</h1>
+
+<form class="pure-form" method="post" action="/albums/new">
+    <label for="name">Name</label>
+    <input name="name" id="name" type="text" size="60" /><br />
+
+
+    <label for="active">Active</label>
+    <select name="active">
+        <option value="0"> not active</option>
+        <option value="1"> active </option>
+    </select><br />
+
+    <input type="submit" class="pure-button" value="Create" />
+</form>
+
+</body>
+</html>

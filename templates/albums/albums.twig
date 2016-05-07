@@ -1,0 +1,39 @@
+<html>
+<head>
+    <title>Example Application</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+</head>
+<body style="padding: 10px; padding-left: 160px;">
+<h1>All albums</h1>
+
+<p><a href="/albums/new">Add new album</a></p>
+
+{% if albums %}
+    <table class="pure-table">
+        <tr>
+            <th>Name</th>
+            <th>Active </th>
+            <th>Created at</th>
+        </tr>
+
+        {% set odd = 1 %}
+
+        {% for album in albums %}
+            <tr {% if odd == 1 %} class="pure-table-odd" {% endif %} >
+                <td><a href="/albums/{{ album.id }}" >{{ album.name  }}</a></td>
+                <td>{{ album.active  }}</td>
+                <td>{{ album.created_at | date('d/m/Y H:i')  }}</td>
+                <td><a href="/albums/delete/{{ album.id }}" > DELETE </a></td>
+            </tr>
+
+
+            {% if (odd == 1) %} {% set odd = 0 %} {%  else  %} {% set odd = 1 %} {% endif %}
+       {% endfor %}
+    </table>
+{% else %}
+    <p>No current albums</p>
+
+{% endif %}
+
+</body>
+</html>
