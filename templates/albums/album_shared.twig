@@ -1,0 +1,38 @@
+{% extends "main_layout.twig" %}
+    {% block title %} Albums {% endblock %}
+
+    {% block content %}
+        <ul class="nav nav-tabs nav-justified">
+            <li><a href="/albums/all"> My albums </a></li>
+            <li class="active"><a href="/albums/shared"> Shared albums </a></li>
+        </ul>
+        <h1>Shared albums</h1>
+
+        {% if albums %}
+            <table class="table table-hover">
+                <tr>
+                    <th>Name</th>
+                    <th>Active</th>
+                    <th>Created at</th>
+                </tr>
+
+                {% set odd = 1 %}
+
+                {% for album in albums %}
+                    <tr {% if odd == 1 %} class="pure-table-odd" {% endif %} >
+                        <td><a href="/albums/{{ album.id }}">{{ album.name }}</a></td>
+                        <td>{{ album.active }}</td>
+                        <td>{{ album.created_at | date('d/m/Y H:i') }}</td>
+                    </tr>
+
+
+                    {% if (odd == 1) %} {% set odd = 0 %} {% else %} {% set odd = 1 %} {% endif %}
+                {% endfor %}
+            </table>
+        {% else %}
+            <p>No current albums</p>
+
+        {% endif %}
+
+
+    {% endblock %}

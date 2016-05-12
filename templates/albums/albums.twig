@@ -1,39 +1,64 @@
-<html>
-<head>
-    <title>Example Application</title>
-    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
-</head>
-<body style="padding: 10px; padding-left: 160px;">
-<h1>All albums</h1>
+{% extends "main_layout.twig" %}
+    {% block title %} Albums {% endblock %}
 
-<p><a href="/albums/new">Add new album</a></p>
-
-{% if albums %}
-    <table class="pure-table">
-        <tr>
-            <th>Name</th>
-            <th>Active </th>
-            <th>Created at</th>
-        </tr>
-
-        {% set odd = 1 %}
-
-        {% for album in albums %}
-            <tr {% if odd == 1 %} class="pure-table-odd" {% endif %} >
-                <td><a href="/albums/{{ album.id }}" >{{ album.name  }}</a></td>
-                <td>{{ album.active  }}</td>
-                <td>{{ album.created_at | date('d/m/Y H:i')  }}</td>
-                <td><a href="/albums/delete/{{ album.id }}" > DELETE </a></td>
-            </tr>
+    {% block content %}
+        <ul class="nav nav-tabs nav-justified">
+            <li class="active"><a href="/albums/all"> My albums </a></li>
+            <li><a href="/albums/shared"> Shared albums </a></li>
+        </ul>
 
 
-            {% if (odd == 1) %} {% set odd = 0 %} {%  else  %} {% set odd = 1 %} {% endif %}
-       {% endfor %}
-    </table>
-{% else %}
-    <p>No current albums</p>
+        <h1>My albums</h1>
 
-{% endif %}
+        {% if albums %}
+            <table class="table table-hover">
+                <tr>
+                    <th>Name</th>
+                    <th>Active</th>
+                    <th>Created at</th>
+                    <th></th>
+                    <th></th>
+                </tr>
 
-</body>
-</html>
+
+                {% for album in albums %}
+                    <tr>
+
+                        <td><a href="/albums/{{ album.id }}">{{ album.name }}</a></td>
+                        <td>{{ album.active }}</td>
+                        <td>{{ album.created_at | date('d/m/Y H:i') }}</td>
+                        <td>
+                            <form action="/albums/{{ album.id }}" method="post">
+                                <input type="hidden" name="_METHOD" value="DELETE"/>
+                                <input class="btn btn-primary" type="submit" value="Delete"/>
+                            </form>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-primary" data-toggle="modal"
+                                    data-target=".bs-modal-lg-{{ album.id }}">
+                                <span class="glyphicon glyphicon-link" aria-hidden="true"></span>
+                            </button>
+
+                            <div class="modal fade bs-modal-lg-{{ album.id }}" tabindex="-1" role="dialog"
+                                 aria-labelledby="myLargeModalLabel">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <br>
+                                        Share link:
+                                        /albums/share/{{ share_strs[album.id] }}
+                                        <br><br>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                {% endfor %}
+            </table>
+        {% else %}
+            <p>No current albums</p>
+        {% endif %}
+
+        <a href="/albums/new" class="btn btn-primary btn-block">Add new album</a>
+
+    {% endblock %}

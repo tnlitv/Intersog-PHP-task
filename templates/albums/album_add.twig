@@ -1,24 +1,28 @@
-<html>
-<head>
-    <title>Example Application</title>
-    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
-</head>
-<body style="padding: 10px; padding-left: 160px;">
-<h1>New Ticket</h1>
+{% extends "main_layout.twig" %}
+    {% block title %} Albums {% endblock %}
 
-<form class="pure-form" method="post" action="/albums/new">
-    <label for="name">Name</label>
-    <input name="name" id="name" type="text" size="60" /><br />
+    {% block content %}
 
+        <div class="row">
+            <div class="col-md-offset-3 col-sm-offset-3 col-sm-6 col-md-6">
+                <h1>New album</h1>
 
-    <label for="active">Active</label>
-    <select name="active">
-        <option value="0"> not active</option>
-        <option value="1"> active </option>
-    </select><br />
-
-    <input type="submit" class="pure-button" value="Create" />
-</form>
-
-</body>
-</html>
+                <form method="post" action="/albums/new">
+                    <div class="input-group">
+                        <span class="input-group-addon"> Name</span>
+                        <input type="text" class="form-control" name="name"/>
+                    </div>
+                    <br>
+                    <div class="input-group">
+                        <span class="input-group-addon"> Active</span>
+                        <select name="active" class="form-control">
+                            <option value="0"> not active</option>
+                            <option value="1"> active</option>
+                        </select>
+                    </div>
+                    <br>
+                    <input type="submit" class="btn btn-primary btn-block" value="Add"/>
+                </form>
+            </div>
+        </div>
+    {% endblock %}
