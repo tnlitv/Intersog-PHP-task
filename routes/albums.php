@@ -79,7 +79,7 @@ $app->post('/albums/new', function (Request $request, Response $response) {
 })->add('AlbumValidator');
 
 
-$app->get('/albums/{id}', function (Request $request, Response $response, $args) {
+$app->get('/albums/{id:\d+}', function (Request $request, Response $response, $args) {
     $token = $request->getAttribute("token");
     $album_id = (int)$args['id'];
     //find album in user's albums
@@ -139,7 +139,7 @@ $app->post('/photos/add', function (Request $request, Response $response, $args)
 });
 
 
-$app->delete("/albums/{id}", function ($request, $response, $arguments) {
+$app->delete("/albums/{id:\d+}", function ($request, $response, $arguments) {
     $token = $request->getAttribute("token");
     $user_id = $token->uid;
     $mapper = $this->spot->mapper("App\\Album");
