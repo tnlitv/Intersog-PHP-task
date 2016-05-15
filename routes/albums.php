@@ -3,6 +3,7 @@ require("../lib/Validators/AlbumValidator.php");
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use \Firebase\JWT\JWT;
+
 $app->get('/albums/all', function (Request $request, Response $response) {
     $user_id = $request->getAttribute("token")->uid;
     $albums = $this->spot->mapper("App\\Album")
@@ -10,7 +11,7 @@ $app->get('/albums/all', function (Request $request, Response $response) {
         ->where(['user' => $user_id])
         ->execute();
     $share_strs = [];
-    foreach ($albums as $album){
+    foreach ($albums as $album) {
         $args = [
             'album_id' => $album->id,
             'uid' => $album->user
@@ -49,8 +50,7 @@ $app->get('/albums/shared', function (Request $request, Response $response) {
 $app->get('/albums', function (Request $request, Response $response) use ($app) {
     $token = $request->getAttribute("token");
     if ($token->role !== $app->getContainer()->roles["Admin"]) {
-        return $response//->withRedirect("/albums/all")
-        ->write(var_dump($token->role) . var_dump($app->getContainer()->roles["Admin"]));
+        return $response->withRedirect("/albums/all");
     }
     $albums = $this->spot->mapper("App\\Album")->all();
     $response = $this->view->render($response, "albums/albums.twig", [
@@ -82,17 +82,62 @@ $app->post('/albums/new', function (Request $request, Response $response) {
 $app->get('/albums/{id}', function (Request $request, Response $response, $args) {
     $token = $request->getAttribute("token");
     $album_id = (int)$args['id'];
-
-    if (false === $album = $this->spot->mapper("App\\AlbumClient")->first([
+    //find album in user's albums
+    $album = $this->spot->mapper("App\\Album")->first([
+        "id" => $album_id,
+        "user" => $token->uid
+    ]);
+    if (false === $album) {
+        //if not found, find in shared albums
+        $album = $this->spot->mapper("App\\AlbumClient")->first([
             "album" => $album_id,
+            "user" => $token->uid
+        ]);
+        if(false === $album) {
+            return $response->withStatus(404)->write("Album not found.");
+        }
+    }
+
+    $photos = $this->spot->mapper("App\\Photo")->where([
+        "album" => $album_id
+    ])
+        ->order(['id' => 'ASC'])
+        ->with('resized_photos');
+
+    return $this->view->render(
+        $response,
+        "albums/album_detail.twig",
+        ['album' => $album, 'photos' => $photos]
+    )->withStatus(200);
+});
+
+$app->post('/photos/add', function (Request $request, Response $response, $args) {
+    $token = $request->getAttribute("token");
+    $album_id = $request->getParsedBody()['album_id'];
+    $files = $request->getUploadedFiles();
+
+    if (false === $album = $this->spot->mapper("App\\Album")->first([
+            "id" => $album_id,
             "user" => $token->uid
         ])
     ) {
-        return $response->withStatus(404)->write("Page not found");
+        return $response->withStatus(404)->write("Could not upload file.");
     }
-    return $this->view->render($response, "albums/album_detail.twig", ["album" => $album]);
+    $new_file = $files['newfile'];
 
+    if ($new_file->getError() !== UPLOAD_ERR_OK) {
+        return $response->withStatus(404)->write("Could not upload file.");
+    }
+    $save_to ="\\imgs\\$token->uid-$album_id-".time(). strrchr($new_file->getClientFilename(), '.');
+    $new_file->moveTo(__DIR__ . '\\..' . $save_to);
+
+    $this->spot->mapper("App\\Photo")->create([
+        'album' => $album_id,
+        'image' => $save_to
+    ]);
+    return $response->withRedirect("/albums/$album_id");
 });
+
 
 $app->delete("/albums/{id}", function ($request, $response, $arguments) {
     $token = $request->getAttribute("token");
@@ -111,11 +156,6 @@ $app->delete("/albums/{id}", function ($request, $response, $arguments) {
         ->withHeader("Content-Type", "application/json")
         ->withRedirect("/albums/all");
 });
-
-/*share link:
-    album id
-    user id
-*/
 
 $app->get("/albums/share/{share_str}", function ($request, $response, $arguments) {
     $token = $request->getAttribute("token");
@@ -138,7 +178,7 @@ $app->get("/albums/share/{share_str}", function ($request, $response, $arguments
             "album" => $args->album_id,
             "user" => $token->uid
         ]);
-    }
-    catch (\Exception $e){};
+    } catch (\Exception $e) {
+    };
     return $response->withRedirect("/albums/shared" . $args->id);
 });

@@ -9,7 +9,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use App\Album;
 
-class GreetCommand extends Command
+class ResizeCommand extends Command
 {
     private $spot;
 
@@ -18,6 +18,7 @@ class GreetCommand extends Command
         $this
             ->setName('resize')
             ->setDescription('Resize photos');
+        
         $dotenv = new \Dotenv\Dotenv(__DIR__."/../..");
         $dotenv->load();
         $config = new \Spot\Config();

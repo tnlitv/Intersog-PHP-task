@@ -3,9 +3,11 @@
 namespace App;
 
 use Spot\Entity;
+use Spot\EntityInterface;
 use Spot\Locator;
 use Spot\Mapper;
 use Spot\EventEmitter;
+use Spot\MapperInterface;
 
 class Photo extends \Spot\Entity
 {
@@ -20,6 +22,14 @@ class Photo extends \Spot\Entity
         ];
     }
 
+    public static function relations(MapperInterface $mapper, EntityInterface $entity)
+    {
+        return [
+            'resized_photos' => $mapper
+                ->hasMany($entity, 'App\ResizedPhoto', 'photo_id')
+                ->order(['size' => 'ASC']),
+        ];
+    }
     public static function events(EventEmitter $eventEmitter)
     {
         $dotenv = new \Dotenv\Dotenv(__DIR__."/../..");
@@ -34,7 +44,7 @@ class Photo extends \Spot\Entity
             "charset" => "utf8"
         ]);
         $spot = new \Spot\Locator($config);
-        
+
         $eventEmitter->on('afterInsert', function (Entity $entity, Mapper $mapper) use ($spot){
             $resized_mapper = $spot->mapper("App\\ResizedPhoto");
             $resized_mapper->create([

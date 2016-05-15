@@ -1,13 +1,46 @@
-<html>
-<head>
-    <title>Example Application</title>
-    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
-</head>
-<body>
-<h1>{{ album.name }}</h1>
+{% extends "main_layout.twig" %}
+    {% block title %} Albums {% endblock %}
 
-<p><strong>{{ album.user }}</strong></p>
+    {% block content %}
 
-<p>{{ album.active }}</p>
-</body>
-</html>
+        <h1>{{ album.name }}</h1>
+        <!-- POST new photo-->
+        <div class="row">
+            <div class="col-sm-12 col-md-12">
+                <form method="post" action="/photos/add" enctype="multipart/form-data" class="form-inline">
+                    <input type="hidden" name="album_id" value="{{ album.id }}">
+                    <div class="form-group">
+                        <label>Add new photo: </label>
+                        <input type="file" name="newfile"/>
+                    </div>
+                    <button type="submit" class="btn btn-default">Add photo</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- available photos-->
+        {% if photos %}
+            <table class="table table-hover">
+                <tr>
+                    <th>Original</th>
+                    <th>100</th>
+                    <th>400</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+
+
+                {% for photo in photos %}
+                    <tr>
+                        <td><img src="/imgs/test1.jpg"> {{ photo.image }}</td>
+                        <td>    {{ photo.resized_photos[0].src }}   </td>
+                        <td>    {{ photo.resized_photos[1].src }}   </td>
+                    </tr>
+
+                {% endfor %}
+            </table>
+        {% else %}
+            <p>No current photos</p>
+        {% endif %}
+
+    {% endblock %}

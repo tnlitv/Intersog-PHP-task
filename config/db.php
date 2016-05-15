@@ -12,8 +12,6 @@ $container["spot"] = function ($container) {
         "charset" => "utf8"
     ]);
     $spot = new \Spot\Locator($config);
-    $logger = new Doctrine\DBAL\Logging\MonologSQLLogger($container["logger"]);
-    $mysql->getConfiguration()->setSQLLogger($logger);
     return $spot;
 };
 
