@@ -14,6 +14,9 @@ $container['roles'] = array(
     'Admin' => 0,
     'Client' => 1,
     'Photographer' => 2,
+    '0' => 'admin',
+    '1' => 'client',
+    '2' => 'photographer'
 );
 $container['view'] = function ($container) {
     $view = new \Slim\Views\Twig('../templates/', [

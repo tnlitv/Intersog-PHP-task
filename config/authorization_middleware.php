@@ -7,7 +7,7 @@ $container = $app->getContainer();
 $container["JwtAuthentication"] = function ($container) {
     return new \Slim\Middleware\JwtAuthentication([
         "path" => "/",
-        "passthrough" => ["/login", "/signup", "/forgot_password"],
+        "passthrough" => ["/login", "/signup", "/forgot_password", "/reset"],
         "cookie" => "Authorization",
         "secret" => getenv("JWT_SECRET"),
         "error" => function ($request, $response, $arguments) {
